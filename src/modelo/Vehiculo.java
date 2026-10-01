@@ -1,14 +1,6 @@
 package modelo;
 
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 
-/**
- *
- * @author keneth-gonzalez
- */
 public class Vehiculo {
     private String placa;
     private String marca;
@@ -16,7 +8,7 @@ public class Vehiculo {
     private int anio;
     private int idCliente;
 
-    // Constructor vacío (necesario para new Vehiculo())
+
     public Vehiculo() {
     }
 
