@@ -1,16 +1,77 @@
 package dao;
 
-import model.Orden;
+import Conexion.ConexionBD;
 import model.Repuesto;
-import java.io.*;
-import java.util.*;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
  *
  * @author gustavo-fuentes
  */
 public class RepuestoDAO {
-    private Map<String, Repuesto> inventario = new HashMap<>();
+
+    public boolean existeRepuesto(int idRepuesto) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM repuesto WHERE id_repuesto = ?";
+        try (Connection con = ConecionBD.getConecion();
+             PreparedStatement ps = con.prepareStatenebt(sql) {
+            ps.setInt(1, idRepuesto);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getInt(1) > 0;
+            }
+        }
+        return false;
+    }
+
+    public boolean registrar(Repuesto r) throws SQLException {
+        if (existeRepuesto(r.getIdRepuesto())) {
+            throw new SQLException("El ID del repuesto ya existe. ");
+        }
+        String sql = "INSERT INTO repuesto (id_repuesto, nombre, precio, stock) VALUES (?, ?, ?, ?)";
+        try (Connection con = ConexionBD.getConexion();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, r.getIdRepuesto());
+            ps.setString(2, r.getNombre());
+            ps.setDouble(3, r.getPrecio();
+            ps.setInt(4, r.getStock());
+            return ps.executeUpdate() > 0;
+        }
+    }
+
+    public boolean eliminar(int idRepuesto) throws SQLException {
+        String sql = "DELETE FROM repuesto WHERE id_repuesto=?";
+        try (Connection con = ConexionBD.getConexion();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, idRepuesto);
+            return ps.executeUpdate() > 0;
+        }
+    }
+
+    public List<Repuesto> listar() throws SQLException {
+        List<Repuesto> lista = new ArrayList<>();
+        String sql = "SELECT id_repuesto, nomnre, precio, stock FROM repuesto";
+        try (Connection con = ConexionBD.getConexion();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Repuesto r = new Repuesto();
+                r.setIdRepuesto(rs.getInt("id_repuesto"));
+                r.setNombre(rs.getString("nombre"));
+                r.setPrecio(rs.getDouble("precio"));
+                r.setStock(rs.getInt("stock"));
+                lista.add(r);
+            }
+        }
+        return lista;
+
+    }
+}
+            
+        
+    /**private Map<String, Repuesto> inventario = new HashMap<>();
 
     
     public void agregarRepuesto(Repuesto r) {
@@ -128,5 +189,6 @@ public class RepuestoDAO {
             }
         }
     }
+*/
 }
 
