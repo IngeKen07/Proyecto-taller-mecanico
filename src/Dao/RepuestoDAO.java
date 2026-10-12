@@ -1,4 +1,4 @@
-package dao;
+package Dao;
 
 import Conexion.ConexionBD;
 import model.Repuesto;
