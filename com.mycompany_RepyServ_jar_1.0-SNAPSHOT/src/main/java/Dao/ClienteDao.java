@@ -1,5 +1,5 @@
-
 package Dao;
+
 import Conexion.ConexionBD;
 import modelo.Cliente;
 
@@ -10,9 +10,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ *
+ * @author gustavo-fuentes
+ */
 public class ClienteDao {
-    
-   public boolean existeCliente(int idCliente) throws SQLException {
+   
+     public boolean existeCliente(int idCliente) throws SQLException {
         String sql = "SELECT COUNT(*) FROM cliente WHERE id_cliente = ?";
         try (Connection con = ConexionBD.getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -69,7 +73,7 @@ public class ClienteDao {
 
     public boolean eliminar(int idCliente) throws SQLException {
         if (tieneVehiculosAsociados(idCliente)) {
-            throw new SQLException("No se puede eliminar el cliente porque tiene vehículos asociados.");
+            throw new SQLException("No se puede eliminar el cliente porque tiene vehÃculos asociados.");
         }
         String sql = "DELETE FROM cliente WHERE id_cliente=?";
         try (Connection con = ConexionBD.getConexion();
@@ -97,3 +101,5 @@ public class ClienteDao {
         return lista;
     }
 }
+
+

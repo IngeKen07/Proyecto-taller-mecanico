@@ -1,5 +1,5 @@
-
 package Dao;
+
 import Conexion.ConexionBD;
 import modelo.Vehiculo;
 
@@ -7,8 +7,12 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ *
+ * @author gustavo-fuentes
+ */
 public class VehiculoDao {
-  
+   
     public boolean existePlaca(String placa) throws SQLException {
         String sql = "SELECT COUNT(*) FROM vehiculo WHERE UPPER(placa) = UPPER(?)";
         try (Connection con = ConexionBD.getConexion();

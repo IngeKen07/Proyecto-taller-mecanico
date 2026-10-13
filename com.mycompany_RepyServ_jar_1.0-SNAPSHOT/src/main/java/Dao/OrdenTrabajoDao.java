@@ -1,21 +1,19 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Dao;
+
 import Conexion.ConexionBD;
 import modelo.OrdenTrabajo;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+
 /**
  *
- * @author keneth-gonzalez
+ * @author gustavo-fuentes
  */
-public class OrdenTrabajoDAO {
-    
-   public int registrarOrden(OrdenTrabajo ot) throws SQLException {
+public class OrdenTrabajoDao {
+   
+    public int registrarOrden(OrdenTrabajo ot) throws SQLException {
         String sql = "INSERT INTO orden_trabajo (id_cliente, placa, id_mecanico, fecha, estado, total) VALUES (?, ?, ?, SYSDATE, 'PENDIENTE', 0)";
         String cols[] = {"id_orden"};
         
@@ -48,7 +46,7 @@ public class OrdenTrabajoDAO {
     }
 
     public boolean agregarRepuestoAOrden(int idOrden, int idRepuesto, int cantidad, double precio) throws SQLException {
-        // 1. Verificar stock
+        
         String checkStock = "SELECT stock FROM repuesto WHERE id_repuesto = ?";
         try (Connection con = ConexionBD.getConexion();
              PreparedStatement psStock = con.prepareStatement(checkStock)) {
@@ -62,7 +60,7 @@ public class OrdenTrabajoDAO {
                 }
             }
 
-            // 2. Insertar detalle
+           
             String sqlDetail = "INSERT INTO detalle_repuesto (id_orden, id_repuesto, cantidad, precio_unitario) VALUES (?, ?, ?, ?)";
             try (PreparedStatement psDetail = con.prepareStatement(sqlDetail)) {
                 psDetail.setInt(1, idOrden);
@@ -72,7 +70,7 @@ public class OrdenTrabajoDAO {
                 psDetail.executeUpdate();
             }
 
-            // 3. Descontar stock
+           
             String sqlUpdateStock = "UPDATE repuesto SET stock = stock - ? WHERE id_repuesto = ?";
             try (PreparedStatement psUpdate = con.prepareStatement(sqlUpdateStock)) {
                 psUpdate.setInt(1, cantidad);
@@ -116,3 +114,4 @@ public class OrdenTrabajoDAO {
     }
     
 }
+
