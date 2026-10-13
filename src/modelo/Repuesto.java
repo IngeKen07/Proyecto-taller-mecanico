@@ -1,45 +1,35 @@
-package model;
+package modelo;
 
 /**
  *
  * @author gustavo-fuentes
  */
 public class Repuesto {
-    private String id;
+private int idRepuesto;
     private String nombre;
     private double precio;
     private int stock;
 
-    public Repuesto(String id, String nombre, double precio, int stock) {
-        if (precio < 0 || stock < 0) {
-            throw new IllegalArgumentException("El precio y el stock no pueden ser negativos.");
-        }
-        this.id = id;
+    public Repuesto() {
+    }
+
+    public Repuesto(int idRepuesto, String nombre, double precio, int stock) {
+        this.idRepuesto = idRepuesto;
         this.nombre = nombre;
         this.precio = precio;
         this.stock = stock;
     }
 
-    public String getId() { return id; }
+    public int getIdRepuesto() { return idRepuesto; }
+    public void setIdRepuesto(int idRepuesto) { this.idRepuesto = idRepuesto; }
+
     public String getNombre() { return nombre; }
+    public void setNombre(String nombre) { this.nombre = nombre; }
+
     public double getPrecio() { return precio; }
+    public void setPrecio(double precio) { this.precio = precio; }
+
     public int getStock() { return stock; }
+    public void setStock(int stock) { this.stock = stock; }
+}    
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public void setPrecio(double precio) {
-        if (precio < 0) throw new IllegalArgumentException("El precio no puede ser negativo.");
-        this.precio = precio;
-    }
-
-    public void setStock(int stock) {
-        if (stock < 0) throw new IllegalArgumentException("El stock no puede ser negativo.");
-        this.stock = stock;
-    }
-
-    public String toCSV() {
-        return id + "," + nombre + "," + precio + "," + stock;
-    }
-}
