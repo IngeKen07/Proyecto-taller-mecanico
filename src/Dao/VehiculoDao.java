@@ -1,5 +1,6 @@
 
 package Dao;
+
 import Conexion.ConexionBD;
 import modelo.Vehiculo;
 
@@ -8,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class VehiculoDao {
-  
+
     public boolean existePlaca(String placa) throws SQLException {
         String sql = "SELECT COUNT(*) FROM vehiculo WHERE UPPER(placa) = UPPER(?)";
         try (Connection con = ConexionBD.getConexion();
@@ -24,7 +25,7 @@ public class VehiculoDao {
     }
 
     public boolean tieneOrdenesAsociadas(String placa) throws SQLException {
-        String sql = "SELECT COUNT(*) FROM orden_trabajo WHERE UPPER(placa) = UPPER(?)";
+        String sql = "SELECT COUNT(*) FROM orden_trabajo WHERE UPPER(placa_vehiculo) = UPPER(?)";
         try (Connection con = ConexionBD.getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, placa);
@@ -54,14 +55,38 @@ public class VehiculoDao {
     }
 
     public boolean eliminar(String placa) throws SQLException {
-        if (tieneOrdenesAsociadas(placa)) {
-            throw new SQLException("No se puede eliminar el vehículo porque tiene órdenes de trabajo registradas.");
-        }
-        String sql = "DELETE FROM vehiculo WHERE UPPER(placa) = UPPER(?)";
-        try (Connection con = ConexionBD.getConexion();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setString(1, placa);
-            return ps.executeUpdate() > 0;
+        try (Connection con = ConexionBD.getConexion()) {
+            con.setAutoCommit(false); 
+            try {
+                
+                String sqlPagos = "DELETE FROM pago WHERE id_orden IN (SELECT id_orden FROM orden_trabajo WHERE UPPER(placa_vehiculo) = UPPER(?))";
+                try (PreparedStatement ps = con.prepareStatement(sqlPagos)) {
+                    ps.setString(1, placa);
+                    ps.executeUpdate();
+                }
+
+                
+                String sqlOrdenes = "DELETE FROM orden_trabajo WHERE UPPER(placa_vehiculo) = UPPER(?)";
+                try (PreparedStatement ps = con.prepareStatement(sqlOrdenes)) {
+                    ps.setString(1, placa);
+                    ps.executeUpdate();
+                }
+
+                
+                String sqlVehiculo = "DELETE FROM vehiculo WHERE UPPER(placa) = UPPER(?)";
+                try (PreparedStatement ps = con.prepareStatement(sqlVehiculo)) {
+                    ps.setString(1, placa);
+                    int filasAfectadas = ps.executeUpdate();
+
+                    con.commit(); 
+                    return filasAfectadas > 0;
+                }
+            } catch (SQLException ex) {
+                con.rollback(); 
+                throw ex;
+            } finally {
+                con.setAutoCommit(true);
+            }
         }
     }
 
@@ -85,7 +110,4 @@ public class VehiculoDao {
         }
         return lista;
     }
-    
-    
-    
 }

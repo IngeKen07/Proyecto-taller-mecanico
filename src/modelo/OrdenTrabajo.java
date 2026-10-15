@@ -1,7 +1,14 @@
 package modelo;
 
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 import java.util.Date;
-
+/**
+ *
+ * @author keneth-gonzalez
+ */
 public class OrdenTrabajo {
  private int idOrden;
     private int idCliente;
@@ -11,11 +18,11 @@ public class OrdenTrabajo {
     private String estado;
     private double total;
 
-
+    // Constructor vacío (Soluciona el error en FrmPrincipal)
     public OrdenTrabajo() {
     }
 
-
+    // Constructor completo
     public OrdenTrabajo(int idOrden, int idCliente, String placa, int idMecanico, Date fecha, String estado, double total) {
         this.idOrden = idOrden;
         this.idCliente = idCliente;
@@ -26,6 +33,7 @@ public class OrdenTrabajo {
         this.total = total;
     }
 
+    // Getters y Setters
     public int getIdOrden() { return idOrden; }
     public void setIdOrden(int idOrden) { this.idOrden = idOrden; }
 

@@ -1,35 +1,38 @@
-package model;
+package modelo;
 
-
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 
 /**
  *
- * @author gustavo-fuentes
+ * @author keneth-gonzalez
  */
 public class Servicio {
-    private String id;
-    private String descripcion;
-    private double costo;
 
-    public Servicio(String id, String descripcion, double costo) {
-        if (costo < 0) {
-            throw new IllegalArgumentException("El costo no puede ser negativo.");
-        }
-        this.id = id;
-        this.descripcion = descripcion;
-        this.costo = costo;
+    private int idServicio;
+    private String nombre;
+    private double precio;
+
+    public Servicio() {
     }
 
-    public String getId() { return id; }
-    public String getDescripcion() { return descripcion; }
-    public double getCosto() { return costo; }
-
-    public void setCosto(double costo) {
-        if (costo < 0) throw new IllegalArgumentException("Costo no puede ser negativo.");
-        this.costo = costo;
+    public Servicio(int idServicio, String nombre, double precio) {
+        this.idServicio = idServicio;
+        this.nombre = nombre;
+        this.precio = precio;
     }
 
-    public String toCSV() {
-        return id + "," + descripcion + "," + costo;
-    }
+    public int getIdServicio() { return idServicio; }
+    public void setIdServicio(int idServicio) { this.idServicio = idServicio; }
+
+    public String getNombre() { return nombre; }
+    public void setNombre(String nombre) { this.nombre = nombre; }
+
+    public double getPrecio() { return precio; }
+    public void setPrecio(double precio) { this.precio = precio; }
+
+    
 }
+

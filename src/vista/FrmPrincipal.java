@@ -1,28 +1,22 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package vista;
+
 import Dao.*;
 import modelo.*;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.io.File;
+import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.List;
-import util.ExportadoReportes;
-import Dao.ReporteDAO;
-import java.io.File;
-/**
- *
- * @author keneth-gonzalez
- */
-public class FrmPrincipal extends JFrame {
-    
- private JTabbedPane tabbedPane;
 
-    // Paneles
+
+public class FrmPrincipal extends JFrame {
+
+    private JTabbedPane tabbedPane;
+
+   
     private JPanel panelClientes;
     private JPanel panelMecanicos;
     private JPanel panelRepuestosServicios;
@@ -30,7 +24,7 @@ public class FrmPrincipal extends JFrame {
     private JPanel panelPagos;
     private JPanel panelReportes;
 
-    // DAOs
+  
     private ClienteDao clienteDao = new ClienteDao();
     private VehiculoDao vehiculoDao = new VehiculoDao();
     private MecanicoDAO mecanicoDao = new MecanicoDAO();
@@ -40,34 +34,34 @@ public class FrmPrincipal extends JFrame {
     private PagoDAO pagoDao = new PagoDAO();
     private ReporteDAO reporteDao = new ReporteDAO();
 
-    // Componentes Pestaña 1: Clientes y Vehículos
+   
     private JTextField txtClienteId, txtClienteNombre, txtClienteTel, txtClienteCorreo;
     private JTextField txtVehiculoPlaca, txtVehiculoMarca, txtVehiculoModelo, txtVehiculoAnio;
     private JTable tblClientes, tblVehiculos;
     private DefaultTableModel modelClientes, modelVehiculos;
 
-    // Componentes Pestaña 2: Mecánicos
+   
     private JTextField txtMecanicoId, txtMecanicoNombre, txtMecanicoTel, txtMecanicoEsp;
     private JTable tblMecanicos;
     private DefaultTableModel modelMecanicos;
 
-    // Componentes Pestaña 3: Repuestos y Servicios
+   
     private JTextField txtRepuestoId, txtRepuestoNombre, txtRepuestoPrecio, txtRepuestoStock;
     private JTextField txtServicioId, txtServicioNombre, txtServicioPrecio;
     private JTable tblRepuestos, tblServicios;
     private DefaultTableModel modelRepuestos, modelServicios;
 
-    // Componentes Pestaña 4: Órdenes de Trabajo
+   
     private JComboBox<String> cbOtCliente, cbOtVehiculo, cbOtMecanico, cbOtServicio, cbOtRepuesto;
     private JTextField txtOtCantidadRepuesto, txtOtNumOrden;
     private DefaultTableModel modelOtDetalle;
     private JTable tblOtDetalle;
 
-    // Componentes Pestaña 5: Pagos
+    
     private JComboBox<String> cbPagoOrden, cbMetodoPago;
     private JTextField txtPagoMonto;
 
-    // Componentes Pestaña 6: Reportes
+    
     private JLabel lblTotalIngresos;
     private DefaultTableModel modelReporteMecanicos, modelReporteServicios;
     private JTable tblReporteMecanicos, tblReporteServicios;
@@ -84,38 +78,52 @@ public class FrmPrincipal extends JFrame {
     private void initComponents() {
         tabbedPane = new JTabbedPane();
 
-        // 1. Clientes y Vehículos
+       
+        tabbedPane.addChangeListener(e -> {
+            int index = tabbedPane.getSelectedIndex();
+            if (index == 0) {
+                cargarTablaClientes();
+            } else if (index == 3) {
+                cargarCombosOrden();
+            } else if (index == 4) {
+                cargarOrdenesPendientesPago();
+            } else if (index == 5) {
+                cargarReportes();
+            }
+        });
+
+      
         initPanelClientes();
         tabbedPane.addTab("1. Clientes y Vehículos", panelClientes);
 
-        // 2. Mecánicos
+        
         initPanelMecanicos();
         tabbedPane.addTab("2. Mecánicos", panelMecanicos);
 
-        // 3. Repuestos y Servicios
+    
         initPanelRepuestosServicios();
         tabbedPane.addTab("3. Repuestos y Servicios", panelRepuestosServicios);
 
-        // 4. Órdenes de Trabajo
+        
         initPanelOrdenes();
         tabbedPane.addTab("4. Órdenes de Trabajo", panelOrdenes);
 
-        // 5. Pagos
+        
         initPanelPagos();
         tabbedPane.addTab("5. Pagos y Cobros", panelPagos);
 
-        // 6. Reportes
+       
         initPanelReportes();
         tabbedPane.addTab("6. Reportes", panelReportes);
 
         add(tabbedPane);
     }
 
-    // --- Pestaña 1: Clientes y Vehículos ---
+ 
     private void initPanelClientes() {
         panelClientes = new JPanel(new GridLayout(1, 2, 10, 10));
 
-        // IZQUIERDA: CLIENTES
+        
         JPanel pnlLeft = new JPanel(new BorderLayout(5, 5));
         pnlLeft.setBorder(BorderFactory.createTitledBorder("Gestión de Clientes"));
 
@@ -154,7 +162,7 @@ public class FrmPrincipal extends JFrame {
         pnlLeft.add(pnlNorthCliente, BorderLayout.NORTH);
         pnlLeft.add(new JScrollPane(tblClientes), BorderLayout.CENTER);
 
-        // DERECHA: VEHÍCULOS
+      
         JPanel pnlRight = new JPanel(new BorderLayout(5, 5));
         pnlRight.setBorder(BorderFactory.createTitledBorder("Vehículos del Cliente Seleccionado"));
 
@@ -194,7 +202,7 @@ public class FrmPrincipal extends JFrame {
         panelClientes.add(pnlLeft);
         panelClientes.add(pnlRight);
 
-        // EVENTOS
+       
         btnGuardarC.addActionListener(e -> guardarCliente());
         btnEliminarC.addActionListener(e -> eliminarCliente());
         btnLimpiarC.addActionListener(e -> limpiarFormCliente());
@@ -204,6 +212,16 @@ public class FrmPrincipal extends JFrame {
         tblClientes.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting() && tblClientes.getSelectedRow() != -1) {
                 cargarVehiculosDeCliente();
+            }
+        });
+
+        tblVehiculos.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting() && tblVehiculos.getSelectedRow() != -1) {
+                int fila = tblVehiculos.getSelectedRow();
+                txtVehiculoPlaca.setText(tblVehiculos.getValueAt(fila, 0).toString());
+                txtVehiculoMarca.setText(tblVehiculos.getValueAt(fila, 1).toString());
+                txtVehiculoModelo.setText(tblVehiculos.getValueAt(fila, 2).toString());
+                txtVehiculoAnio.setText(tblVehiculos.getValueAt(fila, 3).toString());
             }
         });
 
@@ -254,6 +272,7 @@ public class FrmPrincipal extends JFrame {
             }
             limpiarFormCliente();
             cargarTablaClientes();
+            cargarCombosOrden();
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage(), "Error de Validación", JOptionPane.ERROR_MESSAGE);
         }
@@ -271,6 +290,7 @@ public class FrmPrincipal extends JFrame {
                 JOptionPane.showMessageDialog(this, "Cliente eliminado.");
                 cargarTablaClientes();
                 modelVehiculos.setRowCount(0);
+                cargarCombosOrden();
             }
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Restricción de Negocio", JOptionPane.WARNING_MESSAGE);
@@ -285,6 +305,11 @@ public class FrmPrincipal extends JFrame {
         }
         int idCliente = Integer.parseInt(tblClientes.getValueAt(fila, 0).toString());
 
+        if (txtVehiculoAnio.getText().trim().isEmpty() || txtVehiculoPlaca.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Por favor llene los campos obligatorios del vehículo (Placa y Año).", "Campos Incompletos", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
         try {
             Vehiculo v = new Vehiculo();
             v.setPlaca(txtVehiculoPlaca.getText().trim());
@@ -296,11 +321,11 @@ public class FrmPrincipal extends JFrame {
             if (vehiculoDao.registrar(v)) {
                 JOptionPane.showMessageDialog(this, "Vehículo asociado correctamente.");
                 cargarVehiculosDeCliente();
-                txtVehiculoPlaca.setText("");
-                txtVehiculoMarca.setText("");
-                txtVehiculoModelo.setText("");
-                txtVehiculoAnio.setText("");
+                limpiarFormVehiculo();
+                cargarCombosOrden();
             }
+        } catch (NumberFormatException nfe) {
+            JOptionPane.showMessageDialog(this, "El año debe ser un número entero válido.", "Error de Formato", JOptionPane.ERROR_MESSAGE);
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage(), "Error de Validación", JOptionPane.ERROR_MESSAGE);
         }
@@ -317,6 +342,8 @@ public class FrmPrincipal extends JFrame {
             if (vehiculoDao.eliminar(placa)) {
                 JOptionPane.showMessageDialog(this, "Vehículo eliminado.");
                 cargarVehiculosDeCliente();
+                limpiarFormVehiculo();
+                cargarCombosOrden();
             }
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Restricción de Negocio", JOptionPane.WARNING_MESSAGE);
@@ -330,7 +357,14 @@ public class FrmPrincipal extends JFrame {
         txtClienteCorreo.setText("");
     }
 
-    // --- Pestaña 2: Mecánicos ---
+    private void limpiarFormVehiculo() {
+        txtVehiculoPlaca.setText("");
+        txtVehiculoMarca.setText("");
+        txtVehiculoModelo.setText("");
+        txtVehiculoAnio.setText("");
+    }
+
+ 
     private void initPanelMecanicos() {
         panelMecanicos = new JPanel(new BorderLayout(5, 5));
         JLabel lblTitulo = new JLabel("Gestión de Mecánicos del Taller", SwingConstants.CENTER);
@@ -354,21 +388,99 @@ public class FrmPrincipal extends JFrame {
         txtMecanicoEsp = new JTextField();
         pnlForm.add(txtMecanicoEsp);
 
+        JPanel pnlBotones = new JPanel();
+        JButton btnGuardarM = new JButton("Guardar");
+        JButton btnEliminarM = new JButton("Eliminar");
+        JButton btnLimpiarM = new JButton("Limpiar");
+
+        pnlBotones.add(btnGuardarM);
+        pnlBotones.add(btnEliminarM);
+        pnlBotones.add(btnLimpiarM);
+
+        btnGuardarM.addActionListener(e -> guardarMecanico());
+        btnEliminarM.addActionListener(e -> eliminarMecanico());
+        btnLimpiarM.addActionListener(e -> limpiarFormMecanico());
+
+        JPanel pnlArriba = new JPanel(new BorderLayout(5, 5));
+        pnlArriba.add(pnlForm, BorderLayout.CENTER);
+        pnlArriba.add(pnlBotones, BorderLayout.SOUTH);
+
         modelMecanicos = new DefaultTableModel(new String[]{"ID", "Nombre", "Teléfono", "Especialidad"}, 0);
         tblMecanicos = new JTable(modelMecanicos);
 
         JPanel pnlCenter = new JPanel(new BorderLayout(5, 5));
-        pnlCenter.add(pnlForm, BorderLayout.NORTH);
+        pnlCenter.add(pnlArriba, BorderLayout.NORTH);
         pnlCenter.add(new JScrollPane(tblMecanicos), BorderLayout.CENTER);
 
         panelMecanicos.add(pnlCenter, BorderLayout.CENTER);
+
+        cargarTablaMecanicos();
     }
 
-    // --- Pestaña 3: Repuestos y Servicios ---
+    private void cargarTablaMecanicos() {
+        modelMecanicos.setRowCount(0);
+        try {
+            List<Mecanico> lista = mecanicoDao.listar();
+            for (Mecanico m : lista) {
+                modelMecanicos.addRow(new Object[]{m.getIdMecanico(), m.getNombre(), m.getTelefono(), m.getEspecialidad()});
+            }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error al cargar mecánicos: " + ex.getMessage());
+        }
+    }
+
+    private void guardarMecanico() {
+        try {
+            Mecanico m = new Mecanico();
+            m.setIdMecanico(Integer.parseInt(txtMecanicoId.getText().trim()));
+            m.setNombre(txtMecanicoNombre.getText().trim());
+            m.setTelefono(txtMecanicoTel.getText().trim());
+            m.setEspecialidad(txtMecanicoEsp.getText().trim());
+
+            if (mecanicoDao.existeMecanico(m.getIdMecanico())) {
+                mecanicoDao.actualizar(m);
+                JOptionPane.showMessageDialog(this, "Mecánico actualizado.");
+            } else {
+                mecanicoDao.registrar(m);
+                JOptionPane.showMessageDialog(this, "Mecánico registrado.");
+            }
+            limpiarFormMecanico();
+            cargarTablaMecanicos();
+            cargarCombosOrden();
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage(), "Error de Validación", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void eliminarMecanico() {
+        int fila = tblMecanicos.getSelectedRow();
+        if (fila == -1) {
+            JOptionPane.showMessageDialog(this, "Seleccione un mecánico.");
+            return;
+        }
+        int id = Integer.parseInt(tblMecanicos.getValueAt(fila, 0).toString());
+        try {
+            if (mecanicoDao.eliminar(id)) {
+                JOptionPane.showMessageDialog(this, "Mecánico eliminado.");
+                cargarTablaMecanicos();
+                cargarCombosOrden();
+            }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void limpiarFormMecanico() {
+        txtMecanicoId.setText("");
+        txtMecanicoNombre.setText("");
+        txtMecanicoTel.setText("");
+        txtMecanicoEsp.setText("");
+    }
+
+   
     private void initPanelRepuestosServicios() {
         panelRepuestosServicios = new JPanel(new GridLayout(1, 2, 10, 10));
 
-        // REPUESTOS
         JPanel pnlRep = new JPanel(new BorderLayout(5, 5));
         pnlRep.setBorder(BorderFactory.createTitledBorder("Gestión de Repuestos"));
 
@@ -407,7 +519,6 @@ public class FrmPrincipal extends JFrame {
         pnlRep.add(pnlNorthRep, BorderLayout.NORTH);
         pnlRep.add(new JScrollPane(tblRepuestos), BorderLayout.CENTER);
 
-        // SERVICIOS
         JPanel pnlServ = new JPanel(new BorderLayout(5, 5));
         pnlServ.setBorder(BorderFactory.createTitledBorder("Catálogo de Servicios"));
 
@@ -445,7 +556,6 @@ public class FrmPrincipal extends JFrame {
         panelRepuestosServicios.add(pnlRep);
         panelRepuestosServicios.add(pnlServ);
 
-        // EVENTOS
         btnGuardarR.addActionListener(e -> guardarRepuesto());
         btnEliminarR.addActionListener(e -> eliminarRepuesto());
         btnLimpiarR.addActionListener(e -> limpiarFormRepuesto());
@@ -487,6 +597,7 @@ public class FrmPrincipal extends JFrame {
             }
             limpiarFormRepuesto();
             cargarTablaRepuestos();
+            cargarCombosOrden();
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage(), "Error de Validación", JOptionPane.ERROR_MESSAGE);
         }
@@ -503,6 +614,7 @@ public class FrmPrincipal extends JFrame {
             if (repuestoDao.eliminar(id)) {
                 JOptionPane.showMessageDialog(this, "Repuesto eliminado.");
                 cargarTablaRepuestos();
+                cargarCombosOrden();
             }
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -544,6 +656,7 @@ public class FrmPrincipal extends JFrame {
             }
             limpiarFormServicio();
             cargarTablaServicios();
+            cargarCombosOrden();
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage(), "Error de Validación", JOptionPane.ERROR_MESSAGE);
         }
@@ -560,6 +673,7 @@ public class FrmPrincipal extends JFrame {
             if (servicioDao.eliminar(id)) {
                 JOptionPane.showMessageDialog(this, "Servicio eliminado.");
                 cargarTablaServicios();
+                cargarCombosOrden();
             }
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -572,7 +686,7 @@ public class FrmPrincipal extends JFrame {
         txtServicioPrecio.setText("");
     }
 
-    // --- Pestaña 4: Órdenes de Trabajo ---
+    
     private void initPanelOrdenes() {
         panelOrdenes = new JPanel(new BorderLayout(10, 10));
 
@@ -631,7 +745,6 @@ public class FrmPrincipal extends JFrame {
         panelOrdenes.add(pnlTop, BorderLayout.NORTH);
         panelOrdenes.add(new JScrollPane(tblOtDetalle), BorderLayout.CENTER);
 
-        // EVENTOS
         cbOtCliente.addActionListener(e -> cargarVehiculosCombo());
         btnCrearOrden.addActionListener(e -> crearOrden());
         btnAgregarServ.addActionListener(e -> agregarServicio());
@@ -661,6 +774,8 @@ public class FrmPrincipal extends JFrame {
             for (Repuesto r : repuestoDao.listar()) {
                 cbOtRepuesto.addItem(r.getIdRepuesto() + " - " + r.getNombre() + " ($" + r.getPrecio() + ")");
             }
+
+            cargarVehiculosCombo();
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, "Error al cargar datos en los combos: " + ex.getMessage());
         }
@@ -750,6 +865,7 @@ public class FrmPrincipal extends JFrame {
                     ordenDao.agregarRepuestoAOrden(idOrden, idRepuesto, cantidad, r.getPrecio());
                     ordenDao.recalcularTotalOrden(idOrden);
                     modelOtDetalle.addRow(new Object[]{"Repuesto", r.getNombre(), cantidad, r.getPrecio(), cantidad * r.getPrecio()});
+                    cargarTablaRepuestos();
                     break;
                 }
             }
@@ -758,7 +874,7 @@ public class FrmPrincipal extends JFrame {
         }
     }
 
-    // --- Pestaña 5: Pagos y Cobros ---
+   
     private void initPanelPagos() {
         panelPagos = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 20));
 
@@ -773,146 +889,188 @@ public class FrmPrincipal extends JFrame {
         cbMetodoPago = new JComboBox<>(new String[]{"EFECTIVO", "TARJETA", "TRANSFERENCIA"});
         pnlFormPago.add(cbMetodoPago);
 
-        pnlFormPago.add(new JLabel(" Monto a Pagar:"));
+        pnlFormPago.add(new JLabel(" Monto a Pagar ($):"));
         txtPagoMonto = new JTextField();
         pnlFormPago.add(txtPagoMonto);
 
         JButton btnProcesarPago = new JButton("Procesar y Facturar");
-        pnlFormPago.add(new JLabel(""));
+        pnlFormPago.add(new JLabel());
         pnlFormPago.add(btnProcesarPago);
 
         panelPagos.add(pnlFormPago);
 
-        // EVENTOS
-        cbPagoOrden.addActionListener(e -> {
-            if (cbPagoOrden.getSelectedItem() != null) {
-                String item = cbPagoOrden.getSelectedItem().toString();
-                String total = item.split("Total: \\$")[1];
-                txtPagoMonto.setText(total);
-            }
-        });
-
         btnProcesarPago.addActionListener(e -> procesarPago());
+        cbPagoOrden.addActionListener(e -> autoCompletarMontoPago());
 
-        cargarOrdenesPendientesCombo();
+        cargarOrdenesPendientesPago();
     }
 
-    private void cargarOrdenesPendientesCombo() {
-        cbPagoOrden.removeAllItems();
+    private void cargarOrdenesPendientesPago() {
         try {
-            List<String> pendientes = pagoDao.listarOrdenesPendientes();
-            for (String ord : pendientes) {
+            cbPagoOrden.removeAllItems();
+            List<String> ordenes = pagoDao.listarOrdenesPendientes();
+            for (String ord : ordenes) {
                 cbPagoOrden.addItem(ord);
             }
+            autoCompletarMontoPago();
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, "Error al cargar órdenes pendientes: " + ex.getMessage());
         }
     }
 
+    private void autoCompletarMontoPago() {
+        if (cbPagoOrden.getSelectedItem() == null) {
+            txtPagoMonto.setText("");
+            return;
+        }
+        String item = cbPagoOrden.getSelectedItem().toString();
+        if (item.contains("Total: $")) {
+            String montoStr = item.substring(item.indexOf("Total: $") + 8).trim();
+            txtPagoMonto.setText(montoStr);
+        }
+    }
+
     private void procesarPago() {
         if (cbPagoOrden.getSelectedItem() == null) {
-            JOptionPane.showMessageDialog(this, "No hay órdenes pendientes seleccionadas.");
+            JOptionPane.showMessageDialog(this, "No hay orden seleccionada para procesar el pago.");
             return;
         }
 
         try {
             String itemStr = cbPagoOrden.getSelectedItem().toString();
-            int idOrden = Integer.parseInt(itemStr.split(" - ")[0].replace("Orden #", ""));
+            int idOrden = Integer.parseInt(itemStr.split(" - ")[0].replace("Orden #", "").trim());
             String metodo = cbMetodoPago.getSelectedItem().toString();
             double monto = Double.parseDouble(txtPagoMonto.getText().trim());
 
             if (pagoDao.registrarPago(idOrden, metodo, monto)) {
-                JOptionPane.showMessageDialog(this, "Pago procesado y facturado con éxito.");
-                cargarOrdenesPendientesCombo();
-                txtPagoMonto.setText("");
+                JOptionPane.showMessageDialog(this, "¡Pago registrado exitosamente!");
+                cargarOrdenesPendientesPago();
+                txtOtNumOrden.setText("");
+                modelOtDetalle.setRowCount(0);
             }
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, "Error al procesar pago: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    // --- Pestaña 6: Reportes ---
+    
     private void initPanelReportes() {
-panelReportes = new JPanel(new BorderLayout(10, 10));
+        panelReportes = new JPanel(new BorderLayout(10, 10));
 
-    // Panel superior para la etiqueta y el botón de actualización
-    JPanel pnlTop = new JPanel(new BorderLayout());
+        JPanel pnlTop = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 10));
+        lblTotalIngresos = new JLabel("Total de Ingresos Recaudados: $0.0");
+        lblTotalIngresos.setFont(new Font("Arial", Font.BOLD, 16));
+        pnlTop.add(lblTotalIngresos);
 
-    lblTotalIngresos = new JLabel("Total Ingresos Generados: $0.00", SwingConstants.CENTER);
-    lblTotalIngresos.setFont(new Font("Arial", Font.BOLD, 14));
-    pnlTop.add(lblTotalIngresos, BorderLayout.CENTER);
+        JButton btnExportar = new JButton("Exportar Reportes a CSV");
+        pnlTop.add(btnExportar);
 
-    JButton btnActualizarReportes = new JButton("Actualizar Reportes");
-    pnlTop.add(btnActualizarReportes, BorderLayout.EAST);
+        JPanel pnlCenter = new JPanel(new GridLayout(1, 2, 10, 10));
 
-    modelReporteMecanicos = new DefaultTableModel(new String[]{"Mecánico", "Órdenes Atendidas"}, 0);
-    tblReporteMecanicos = new JTable(modelReporteMecanicos);
+        JPanel pnlMec = new JPanel(new BorderLayout());
+        pnlMec.setBorder(BorderFactory.createTitledBorder("Mecánicos Más Productivos"));
+        modelReporteMecanicos = new DefaultTableModel(new String[]{"Mecánico", "Órdenes Atendidas"}, 0);
+        tblReporteMecanicos = new JTable(modelReporteMecanicos);
+        pnlMec.add(new JScrollPane(tblReporteMecanicos), BorderLayout.CENTER);
 
-    modelReporteServicios = new DefaultTableModel(new String[]{"Servicio", "Veces Solicitado"}, 0);
-    tblReporteServicios = new JTable(modelReporteServicios);
+        JPanel pnlServ = new JPanel(new BorderLayout());
+        pnlServ.setBorder(BorderFactory.createTitledBorder("Servicios Más Solicitados"));
+        modelReporteServicios = new DefaultTableModel(new String[]{"Servicio", "Veces Solicitado"}, 0);
+        tblReporteServicios = new JTable(modelReporteServicios);
+        pnlServ.add(new JScrollPane(tblReporteServicios), BorderLayout.CENTER);
 
-    JPanel pnlTablas = new JPanel(new GridLayout(1, 2, 10, 10));
-    pnlTablas.add(new JScrollPane(tblReporteMecanicos));
-    pnlTablas.add(new JScrollPane(tblReporteServicios));
+        pnlCenter.add(pnlMec);
+        pnlCenter.add(pnlServ);
 
-    // --- Panel Inferior con Botones de Exportación ---
-    JPanel pnlBottom = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
-    JButton btnExportarHTML = new JButton("Exportar Reportes a HTML");
-    JButton btnExportarExcel = new JButton("Exportar Reportes a Excel");
+        panelReportes.add(pnlTop, BorderLayout.NORTH);
+        panelReportes.add(new JScrollPane(pnlCenter), BorderLayout.CENTER);
 
-    pnlBottom.add(btnExportarHTML);
-    pnlBottom.add(btnExportarExcel);
+        btnExportar.addActionListener(e -> exportarReportes());
 
-    panelReportes.add(pnlTop, BorderLayout.NORTH);
-    panelReportes.add(pnlTablas, BorderLayout.CENTER);
-    panelReportes.add(pnlBottom, BorderLayout.SOUTH);
-
-    // Evento para recargar datos
-    btnActualizarReportes.addActionListener(e -> cargarReportes());
-
-    // Eventos para Exportar
-    btnExportarHTML.addActionListener(e -> {
-        JFileChooser chooser = new JFileChooser();
-        chooser.setDialogTitle("Guardar Reporte en HTML");
-        if (chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-            File archivo = new File(chooser.getSelectedFile().getAbsolutePath() + ".html");
-            util.ExportadoReportes.exportarTablaAHTML(tblReporteMecanicos, "Reporte de Órdenes por Mecánico", archivo);
-        }
-    });
-
-    btnExportarExcel.addActionListener(e -> {
-        JFileChooser chooser = new JFileChooser();
-        chooser.setDialogTitle("Guardar Reporte en Excel (.csv)");
-        if (chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-            File archivo = new File(chooser.getSelectedFile().getAbsolutePath() + ".csv");
-            util.ExportadoReportes.exportarTablaAExcel(tblReporteMecanicos, archivo);
-        }
-    });
-
-    cargarReportes();
+        cargarReportes();
     }
 
-    private void cargarReportes() {
+private void cargarReportes() {
         try {
-            // 1. Cargar Ingresos
-            double ingresos = reporteDao.obtenerTotalIngresos();
-            lblTotalIngresos.setText(String.format("Total Ingresos Acumulados: $%.2f", ingresos));
+           
+            double total = reporteDao.obtenerTotalIngresos();
+            lblTotalIngresos.setText("Total de Ingresos Recaudados: $" + String.format("%.2f", total));
 
-            // 2. Cargar Mecánicos
+           
             modelReporteMecanicos.setRowCount(0);
-            for (Object[] fila : reporteDao.obtenerOrdenesPorMecanico()) {
-                modelReporteMecanicos.addRow(fila);
+            List<Object[]> mecList = reporteDao.obtenerOrdenesPorMecanico();
+            if (mecList != null) {
+                for (Object[] fila : mecList) {
+                    modelReporteMecanicos.addRow(fila);
+                }
             }
 
-            // 3. Cargar Servicios
+           
             modelReporteServicios.setRowCount(0);
-            for (Object[] fila : reporteDao.obtenerServiciosMasSolicitados()) {
-                modelReporteServicios.addRow(fila);
+            List<Object[]> servList = reporteDao.obtenerServiciosMasSolicitados();
+            if (servList != null) {
+                for (Object[] fila : servList) {
+                    modelReporteServicios.addRow(fila);
+                }
             }
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Error al cargar reportes: " + ex.getMessage());
+        } catch (Exception ex) {
+            lblTotalIngresos.setText("Total de Ingresos Recaudados: $0.0");
         }
-}
+    }
 
-}
+    private void exportarTablaACSV(JTable tabla, String rutaArchivo) throws Exception {
+        try (PrintWriter pw = new PrintWriter(new File(rutaArchivo))) {
+            DefaultTableModel model = (DefaultTableModel) tabla.getModel();
+            
+            
+            for (int i = 0; i < model.getColumnCount(); i++) {
+                pw.print(model.getColumnName(i) + (i == model.getColumnCount() - 1 ? "" : ","));
+            }
+            pw.println();
 
+           
+            for (int i = 0; i < model.getRowCount(); i++) {
+                for (int j = 0; j < model.getColumnCount(); j++) {
+                    Object val = model.getValueAt(i, j);
+                    pw.print((val != null ? val.toString() : "") + (j == model.getColumnCount() - 1 ? "" : ","));
+                }
+                pw.println();
+            }
+        }
+    }
+
+private void exportarReportes() {
+        if (modelReporteMecanicos.getRowCount() == 0 && modelReporteServicios.getRowCount() == 0) {
+            JOptionPane.showMessageDialog(this, "No hay datos cargados en las tablas para exportar.", "Atención", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        try {
+            JFileChooser chooser = new JFileChooser();
+            chooser.setDialogTitle("Guardar Reporte CSV");
+            chooser.setSelectedFile(new File("Reporte_Taller.csv"));
+
+            if (chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+                File file = chooser.getSelectedFile();
+                String basePath = file.getAbsolutePath();
+
+                
+                if (basePath.toLowerCase().endsWith(".csv")) {
+                    basePath = basePath.substring(0, basePath.length() - 4);
+                }
+
+                String pathMec = basePath + "_mecanicos.csv";
+                String pathServ = basePath + "_servicios.csv";
+
+                exportarTablaACSV(tblReporteMecanicos, pathMec);
+                exportarTablaACSV(tblReporteServicios, pathServ);
+
+                JOptionPane.showMessageDialog(this, "¡Reportes exportados exitosamente!\n\n" +
+                        "1. Mecánicos: " + pathMec + "\n" +
+                        "2. Servicios: " + pathServ, "Exportación Exitosa", JOptionPane.INFORMATION_MESSAGE);
+            }
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Error al exportar: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+}

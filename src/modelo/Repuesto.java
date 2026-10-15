@@ -1,11 +1,17 @@
 package modelo;
 
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+
 /**
  *
- * @author gustavo-fuentes
+ * @author keneth-gonzalez
  */
 public class Repuesto {
-private int idRepuesto;
+    
+    private int idRepuesto;
     private String nombre;
     private double precio;
     private int stock;
@@ -31,5 +37,6 @@ private int idRepuesto;
 
     public int getStock() { return stock; }
     public void setStock(int stock) { this.stock = stock; }
-}    
-
+}
+    
+   
