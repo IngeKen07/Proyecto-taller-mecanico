@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package Dao;
 import Conexion.ConexionBD;
 import java.sql.Connection;
@@ -10,10 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-/**
- *
- * @author keneth-gonzalez
- */
+
 public class ReporteDAO {
     public double obtenerTotalIngresos() throws SQLException {
         String sql = "SELECT NVL(SUM(monto), 0) FROM pago";
@@ -45,7 +39,7 @@ public class ReporteDAO {
 
     public List<Object[]> obtenerServiciosMasSolicitados() throws SQLException {
         List<Object[]> lista = new ArrayList<>();
-        // Se ajustó s.descripcion por s.nombre y la tabla detalle por orden_servicio
+    
         String sql = "SELECT s.nombre, COUNT(ds.id_servicio) AS cantidad " +
                      "FROM servicio s " +
                      "JOIN orden_servicio ds ON s.id_servicio = ds.id_servicio " +
