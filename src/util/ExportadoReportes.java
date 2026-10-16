@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package util;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -10,10 +7,7 @@ import javax.swing.table.TableModel;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-/**
- *
- * @author keneth-gonzalez
- */
+
 public class ExportadoReportes {
     
     public static void exportarTablaAHTML(JTable tabla, String titulo, File archivo) {
