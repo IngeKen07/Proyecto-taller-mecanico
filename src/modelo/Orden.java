@@ -5,10 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- *
- * @author gustavo-fuentes
- */
+
 public class Orden {
     private String idOrden;
     private List<Servicio> servicios = new ArrayList<>();
