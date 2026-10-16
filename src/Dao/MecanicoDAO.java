@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package Dao;
 import Conexion.ConexionBD;
 import modelo.Mecanico;
@@ -9,10 +6,7 @@ import modelo.Mecanico;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-/**
- *
- * @author keneth-gonzalez
- */
+
 public class MecanicoDAO {
     public boolean existeMecanico(int idMecanico) throws SQLException {
         String sql = "SELECT COUNT(*) FROM mecanico WHERE id_mecanico = ?";
